@@ -5,7 +5,7 @@ import { BrowserRouter } from 'react-router-dom';
 
 
 function App() {
-  const Rest_api_key='a3b5b2dffeffac10518565f633af9f12' //REST API KEY
+  const Rest_api_key=`${process.env.REACT_APP_KAKAO_API}` //REST API KEY
   const redirect_uri = 'http://localhost:3000/oauth' //Redirect URI
   const KAKAO_AUTH_URL = `https://kauth.kakao.com/oauth/authorize?client_id=${Rest_api_key}&redirect_uri=${redirect_uri}&response_type=code`
   const token = new URL(window.location.href).searchParams.get("code");
