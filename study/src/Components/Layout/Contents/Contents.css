@@ -1,0 +1,13 @@
+.contents{
+    display: flex;
+    height: 100%;
+}
+
+.left{
+    width: 40%;
+    border: 1px solid #ddd;
+}
+
+.right{
+    width: 60%;
+}
