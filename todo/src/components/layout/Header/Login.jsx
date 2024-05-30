@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import Modal from 'react-modal';
 import { supabaseClient } from '../../../lib/client';
 import { useForm, SubmitHandler } from "react-hook-form"
+import { atom, useRecoilState } from 'recoil';
+
 
 const style = {
     overlay: {backgroundColor: "rgba(0, 0, 0, 0.5)",}
@@ -16,7 +18,11 @@ const style = {
     }
 }
 
-const Login = ({children}) => {
+
+const Login = ({children, propsFunction, props}) => {
+
+    console.log('login userinfo:', props);
+
     const {
         register
         ,handleSubmit
@@ -42,26 +48,38 @@ const Login = ({children}) => {
     }
 
     
-    const onLogin = async (inputData) => {
+    const onLogin = async (inputData, props) => {
         
         const { data, error } = await supabaseClient
-        .from('USER_INFO')
-        .select('email, name, password')
-        .eq('email', inputData.email)
-        .eq('password', inputData.password)
+            .from('USER_INFO')
+            .select('email, name, password')
+            .eq('email', inputData.email)
+            .eq('password', inputData.password)
 
-        if(data){
-            console.log(JSON.stringify(data[0]));
-            window.sessionStorage.setItem('userEmail', JSON.stringify(data[0].email));
-            window.sessionStorage.setItem('userName', JSON.stringify(data[0].name));
-            closeLogin();
-            // setIsLogin(true);
+        console.log(data.length);
+
+        if(data.length === 0){
+            alert('일치하는 로그인 정보가 없습니다.');
+            return;
         }
-        
+
+        //로그인 정보 저장
+        //console.log(JSON.stringify(data[0]));
+        window.sessionStorage.setItem('userEmail', JSON.stringify(data[0].email));
+        window.sessionStorage.setItem('userName', JSON.stringify(data[0].name));
+        closeLogin();
+
+        // propsFunction.sessionStorageEffect('userEmail');
+        const currUserEmail = atom({
+            key: 'currUser'
+            ,default: null
+            ,effects: [
+                propsFunction.sessionStorageEffect('userEmail')
+            ]
+        })
+        props.currUserEmail();
     }
 
-    // const userEmail = window.sessionStorage.getItem('userInfo');
-    // console.log(userEmail);
 
     return (
         <>
