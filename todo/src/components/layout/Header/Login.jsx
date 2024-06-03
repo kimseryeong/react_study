@@ -6,7 +6,7 @@ import { atom, useRecoilState } from 'recoil';
 
 
 const style = {
-    overlay: {backgroundColor: "rgba(0, 0, 0, 0.5)",}
+    overlay: {backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1000}
     ,content: {
         textAlign: 'center'
         ,width: '400px'

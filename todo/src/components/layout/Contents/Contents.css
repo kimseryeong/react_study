@@ -1,16 +1,18 @@
 .contents{
     display: flex;
     height: 100vh;
+    padding-top: 60px;
 }
 
 .left{
-    width: 40%;
+    width: 60%;
     border-right-width: 2px;
     border-right-color: #ddd;
     border-right-style: solid;
     border-right-style: 1px solid;
 }
 
-.right{
-    width: 60%;
+.date-wrap{
+    color: #7FB3D5;
+    padding: 10px;
 }

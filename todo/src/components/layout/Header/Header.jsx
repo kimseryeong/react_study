@@ -58,7 +58,7 @@ const Header = () => {
 
     return (
         <header className='header'>
-            <p className='logo'>ToDoList</p>
+            <p className='logo'></p>
             <div className='btn-contents'>
                 {isLogin ? 
                     <>
