@@ -21,7 +21,7 @@ const todoList = [
         
     }
 ]
-const uuid = '192954f0-2305-4734-8777-211fd51d7d62'
+const uuid = ''
 const loadTodoList = async (setError, setDataList) => {
     if (!uuid) {
         alert('uuid 없음!!');

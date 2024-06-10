@@ -15,7 +15,7 @@ const style = {
     }
 }
 
-const uuid = '192954f0-2305-4734-8777-211fd51d7d62'
+const uuid = ''
 
 export default function TodoCreate (){
     
