@@ -11,6 +11,10 @@
     border-right-style: solid;
     border-right-style: 1px solid;
 }
+.right{
+    width: 40%;
+    /* height: 100%; */
+}
 
 .date-wrap{
     color: #7FB3D5;
