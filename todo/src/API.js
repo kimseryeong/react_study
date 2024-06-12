@@ -76,7 +76,6 @@ export const onDeleteTodo = async (uuid, idx) => {
         console.log(data);
     }
 
-    return data[0];
 }
 
 //todo 완료체크하기

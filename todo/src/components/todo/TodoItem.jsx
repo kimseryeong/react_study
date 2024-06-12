@@ -3,7 +3,16 @@ import { todoState, userState } from '../../lib/Atom';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { Modal } from 'react-modal';
 import { useState } from 'react';
+import styled from 'styled-components';
 
+const ItemStyle = styled.div`
+    display:flex;
+    margin: 10px;
+
+    .buttons{
+        margin-left: auto;
+    }
+`;
 
 const style = {
     overlay: {backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1000}
@@ -24,38 +33,40 @@ export default function TodoItem ({text, idx}){
     const userInfo = useRecoilValue(userState);
     const uuid = userInfo ? userInfo.user.id : null;
     const [newTodo, setNewTodo] = useState('');
-    const [isOpen, setIsOpen] = useState(false);
-    const onModal = () => setIsOpen(true);
-    const onClose = () => setIsOpen(false);
+    // const [isOpen, setIsOpen] = useState(false);
+    // const onModal = () => setIsOpen(true);
+    // const onClose = () => setIsOpen(false);
 
-    //수정
-    const onUpdate = async () => {
-        console.log('onUpdate');
+    // //수정
+    // const onUpdate = async () => {
+    //     console.log('onUpdate');
 
-        const data = await onUpdateTodo(uuid, idx, newTodo, onClose);
-        setTodoList((prev) => [...prev, data]);
-    }
+    //     const data = await onUpdateTodo(uuid, idx, newTodo, onClose);
+    //     setTodoList((prev) => [...prev, data]);
+    // }
 
     //삭제
     const onDelete = async () => {
         console.log('onDelete');
 
-        const data = await onDeleteTodo(uuid, idx);
-        setTodoList((prev) => [...prev, data]);
+        await onDeleteTodo(uuid, idx);
+        setTodoList((prev) => prev.filter(t => t.idx !== idx));
     }
 
 
 
     return (
-        <>
-            <div>체크표시</div>
+        <ItemStyle>
+            {/* <div>체크표시</div> */}
             <div>{text}</div>
-            <div>
-                <button onClick={onModal}>수정</button>
+            <div class="buttons">
+                <button >수정</button>
                 <button onClick={onDelete}>삭제</button>
+                {/* <button onClick={onModal}>수정</button>
+                <button onClick={onDelete}>삭제</button> */}
             </div>
 
-            <Modal
+            {/* <Modal
                 isOpen={isOpen}
                 onRequestClose={onClose}    
                 style={style}
@@ -64,7 +75,7 @@ export default function TodoItem ({text, idx}){
                 <input type='text' name='newTodo' onChange={(e) => setNewTodo(e.target.value)}/>
                 <button onClick={onUpdate}>수정</button>
                 <button onClick={onClose}>취소</button>
-            </Modal>
-        </>
+            </Modal> */}
+        </ItemStyle>
     );
 }
