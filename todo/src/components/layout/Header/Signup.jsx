@@ -90,28 +90,21 @@ const Signup = ({children}) => {
     //supabase signup
     const onSignUp = async (input_data) => {
         
-        
-        // if(!isSame){
-        //     alert('비밀번호 틀림');
-        //     return;
-        // }
+        let { data, error } = await supabaseClient.auth.signUp({
+            email: input_data.email,
+            password: input_data.password
+        })
 
-        try{
-            const { data, error } = await supabaseClient
-                .from('USER_INFO')
-                .insert([
-                { email: input_data.email, name: input_data.name, password: input_data.password },
-                ])
-                // .select()    
-
-            if (data){
-                console.log('data: ', data);
-            }
-        }
-        catch (error) {
-            alert('문제발생');
+        if(error){
             console.log(error);
+            alert('회원가입 실패 !!');
+            return ;
         }
+
+        console.log(data);
+        alert('회원가입 성공');
+        
+        closeSignup();
     }
 
     return (

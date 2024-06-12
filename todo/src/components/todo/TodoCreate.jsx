@@ -1,6 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from 'react-modal';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { supabaseClient } from '../../lib/client';
+import { dateState, errorState, todoState, userState } from '../../lib/Atom';
+
+import { onCreateTodo } from '../../API';
 
 const style = {
     overlay: {backgroundColor: "rgba(0, 0, 0, 0.5)", zIndex: 1000}
@@ -15,48 +19,40 @@ const style = {
     }
 }
 
-const uuid = ''
-
 export default function TodoCreate (){
-    
 
-    const [createTodo, setCreateTodo] = useState('');
+    const [newTodo, setNewTodo] = useState('');
+
+    const date = useRecoilValue(dateState);
+    const userInfo = useRecoilValue(userState);
+    const uuid = userInfo ? userInfo.user.id : null;
+    const setError = useSetRecoilState(errorState);
+    const setTodoList = useSetRecoilState(todoState);
+    
     const [isOpen, setIsOpen] = useState(false);
     const onModal = () => setIsOpen(true);
     const onClose = () => setIsOpen(false);
 
+    //06.12
     const onCreate = async () => {
-        console.log(createTodo);
+        console.log('onCreate');
 
-        const {data, error} = await supabaseClient.from('todolist')
-            .insert([
-                {
-                    id: uuid, 
-                    title: createTodo, 
-                    start_date: '2024-06-10',
-                    complete_state: 'N', 
-                }
-            ])
-
-        debugger;
-
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('성공', data);
-        }
-        onClose();
+        const data = await onCreateTodo(uuid, date, newTodo, onClose, setError);
+        setTodoList((prev) => [...prev, data]);
     }
+    //06.12
+
     return (
         <>
-            <button onClick={onModal}>+ 할 일 추가</button>
+            {userInfo ? <button onClick={onModal}>+ 할 일 추가</button> : <div>로그인 후 이용가능합니다.</div>}
+            
             <Modal
                 isOpen={isOpen}
                 onRequestClose={onClose}    
                 style={style}
             >
                 할 일 추가 모달
-                <input type='text' name='newTodo' onChange={(e) => setCreateTodo(e.target.value)}/>
+                <input type='text' name='newTodo' onChange={(e) => setNewTodo(e.target.value)}/>
                 <button onClick={onCreate}>등록</button>
                 <button onClick={onClose}>취소</button>
             </Modal>

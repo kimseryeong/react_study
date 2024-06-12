@@ -1,8 +1,10 @@
+import { supabaseClient } from '../../../lib/client';
+import { userState } from '../../../lib/Atom';
 import './Header.css';
 import Login from './Login';
 import Signup from './Signup';
 import React, { useEffect, useReducer, useState } from 'react';
-import { atom, useRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 
 const sessionStorageEffect = (key) => ({setSelf, onSet}) => {
@@ -28,10 +30,17 @@ const sessionStorageEffect = (key) => ({setSelf, onSet}) => {
 // })
 
 
-
-const onLogout = () => {
-    //     window.sessionStorage.removeItem('userInfo');
+//06.11----------------------------------------------------
+const onLogout = async () => {
+    
+    let { error } = await supabaseClient.auth.signOut()
+    if(error) {
+        console.log(error);
+        return;
+    }
+    alert('로그아웃 성공')
 }
+//06.11----------------------------------------------------
 
 const Header = () => {
     //const [currUserInfo, setCurrUserInfo] = useRecoilState(currUserEmail);
@@ -55,14 +64,29 @@ const Header = () => {
     const isLogin = !userEmail ? false : true;
     
 
+    //06.11 user session recoil 다시 담기-----------------------------------------
+    const [session, setSession] = useRecoilState(userState);
+    useEffect( ()=>{
+        supabaseClient.auth.getSession().then(({data: {session}}) => {
+            setSession(session);
+        })
+        supabaseClient.auth.onAuthStateChange((_event, session) => {
+            setSession(session);
+        })
+    }, [setSession])
+
+    console.log('session');
+    console.log(session);
+
+    //06.11 ---------------------------------------------------------------------
 
     return (
         <header className='header'>
             <p className='logo'></p>
             <div className='btn-contents'>
-                {isLogin ? 
+                {session ? 
                     <>
-                        <p className='userInfo'>{ userName }</p>
+                        <p className='userInfo'>{ session.user.email }</p>
                         <button onClick={onLogout}>Logout</button>
                     </>
                     : 

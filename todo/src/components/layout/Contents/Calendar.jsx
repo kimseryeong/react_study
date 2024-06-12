@@ -2,42 +2,63 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interaction from '@fullcalendar/interaction';
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { dateState } from '../../../lib/Atom';
+import { dateState, todoState, userState, errorState } from '../../../lib/Atom';
 
 
 import { FullCalendarContainer } from './FullCalendarContainer'
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';  //boot5
+import { useEffect } from 'react';
 
-const events = [
-    {title: 'event1', start: new Date()},
-    {
-        id:'event2',
-        title: 'event2',
-        start: '2024-06-02', 
-        end: '2024-06-04', 
-        backgroundColor: '#A9CCE3', 
 
-    },
-    {title: 'event10', start: '2024-06-02', end: '2024-06-07', backgroundColor: '#A9CCE3'},
-    {title: 'event3', start: '2024-06-07', backgroundColor: '#A9CCE3'},
-]
+// const events = [
+//     {title: 'event1', start: new Date()},
+//     {
+//         id:'event2',
+//         title: 'event2',
+//         start: '2024-06-02', 
+//         end: '2024-06-04', 
+//         backgroundColor: '#A9CCE3', 
+
+//     },
+//     {title: 'event10', start: '2024-06-02', end: '2024-06-07', backgroundColor: '#A9CCE3'},
+//     {title: 'event3', start: '2024-06-07', backgroundColor: '#A9CCE3'},
+// ]
+
+const date = () => {
+
+    const newDate = new Date();
+    const year = newDate.getFullYear();
+    const month = newDate.getMonth()+1;
+    
+    return `${year}  ${month}`;
+}
 
 export default function Calendar () {
-    
+    const setTodoList = useSetRecoilState(todoState); 
+    const setError = useSetRecoilState(errorState);
+    const currDate = useRecoilValue(dateState);
+    const userInfo = useRecoilValue(userState);
+    const uuid = userInfo ? userInfo.id : '';
+
+    //06.11-----------------------------------------------------
+
+    //06.11-----------------------------------------------------
+
+
     const renderTodo = (date) => {
-        console.log(`날짜에 맞는 todo 렌더링하기`, date);
     
+        const year = date.getFullYear();
         const month = (date.getMonth() + 1).toString().padStart(2, '0');
         const day = date.getDate().toString().padStart(2, '0');
         
-        const click = `${month}.${day}`;
+        const click = `${year}-${month}-${day}`;
     
-        setClickDate(click);
+        setDate(click);
     }
-    const [clickDate, setClickDate] = useRecoilState(dateState);
+    const [date, setDate] = useRecoilState(dateState);
 
     return (
         <>
@@ -45,7 +66,7 @@ export default function Calendar () {
                 <FullCalendar 
                     plugins={[dayGridPlugin, interaction, bootstrap5Plugin ]}
                     initialView='dayGridMonth'
-                    events={events}
+                    // events={events}
                     viewHeight={300}
                     themeSystem='bootstrap5'
                     headerToolbar={{

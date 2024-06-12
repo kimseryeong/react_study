@@ -50,34 +50,23 @@ const Login = ({children, propsFunction, props}) => {
     
     const onLogin = async (inputData, props) => {
         
-        const { data, error } = await supabaseClient
-            .from('USER_INFO')
-            .select('email, name, password')
-            .eq('email', inputData.email)
-            .eq('password', inputData.password)
+        let { data, error } = await supabaseClient.auth.signInWithPassword({
+            email: inputData.email,
+            password: inputData.password
+        })
 
-        console.log(data.length);
-
-        if(data.length === 0){
-            alert('일치하는 로그인 정보가 없습니다.');
+        closeLogin();
+        if(error) {
+            alert('로그인 실패 !!!!');
+            console.log(error);
             return;
         }
 
-        //로그인 정보 저장
-        //console.log(JSON.stringify(data[0]));
-        window.sessionStorage.setItem('userEmail', JSON.stringify(data[0].email));
-        window.sessionStorage.setItem('userName', JSON.stringify(data[0].name));
-        closeLogin();
+        console.log('로그인 완료');
+        console.log(data);
 
-        // propsFunction.sessionStorageEffect('userEmail');
-        const currUserEmail = atom({
-            key: 'currUser'
-            ,default: null
-            ,effects: [
-                propsFunction.sessionStorageEffect('userEmail')
-            ]
-        })
-        props.currUserEmail();
+        
+
     }
 
 

@@ -2,6 +2,8 @@ import TodoItem from './TodoItem';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { supabaseClient } from '../../lib/client';
+import { dateState, userState, todoState, filteredTodoState } from '../../lib/Atom';
+import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from 'recoil';
 
 const TodoListStyle = styled.div `
     display: flex;
@@ -9,64 +11,61 @@ const TodoListStyle = styled.div `
     padding: 10px;
 `;
 
-const todoList = [
-    {
-        id: 1
-        ,title: `todoList 1`
-        
-    }
-    ,{
-        id: 2
-        ,title: `todoList 2`
-        
-    }
-]
-const uuid = ''
-const loadTodoList = async (setError, setDataList) => {
-    if (!uuid) {
-        alert('uuid 없음!!');
-        setError('UUID가 없습니다.');
+
+const loadTodoList = async (uuid, date, setDataList, setTodoList, setError) => {
+
+    if(!uuid){
+        console.log('로그인 정보 없음');
         return;
     }
-
     const {data, error} = await supabaseClient.from('todolist')
         .select('*')
         .eq('id', uuid)
-        .eq('start_date', '2024-06-10')
+        .eq('start_date', date)
     
     if(error) {
-        alert('문제가 발생했습니다. 다시 시도하세요.');
-        setError('데이터 로드 중 문제가 발생했습니다.');
+        alert('[ TodoList > loadTodoList ] 문제가 발생했습니다.');
+        setError('[ TodoList > loadTodoList ] 데이터 로드 중 문제가 발생했습니다.');
+        console.log(error);
         return;
     }
     else{
-        console.log('조회성공 >> ');
+        console.log('[ TodoList > loadTodoList ] 조회성공 >> ');
         console.log(data);
-        setDataList(data);
+        setDataList(data); //지역상태
+        setTodoList(data); //recoil
     }
 
 }
 
-export default function TodoList ({uuid}){
+export default function TodoList (){
+    const userInfo = useRecoilValue(userState);
+    const uuid = userInfo ? userInfo.user.id : null;
+    const date = useRecoilValue(dateState);
     const [dataList, setDataList] = useState([]);
+    const [todoList, setTodoList] = useRecoilState(todoState)
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-        loadTodoList(uuid, setDataList, setError);
-    }, [uuid]);
+    console.log(userInfo);
+    console.log(uuid);
+    console.log(date);
+
+    useEffect(()=>{
+        loadTodoList(uuid, date, setDataList, setTodoList, setError);
+    }, [userInfo, date])
+
 
     if (error) {
         return <div>{error}</div>;
     }
 
+    console.log('todolist >>')
+    console.log(todoList);
 
     return (
         <TodoListStyle>
-            
             {
-                dataList.length > 0
-                ? dataList.map((v, i) => <TodoItem key={i} text={v.title} />)
-                : <div>할 일이 없습니다.</div>
+                todoList && todoList.map((v, i) => <TodoItem key={i} text={v.title} idx={v.idx}/>)
             }
         </TodoListStyle>
     );
