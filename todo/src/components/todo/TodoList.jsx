@@ -2,8 +2,8 @@ import TodoItem from './TodoItem';
 import styled from 'styled-components';
 import { useEffect, useState } from 'react';
 import { supabaseClient } from '../../lib/client';
-import { dateState, userState, todoState, filteredTodoState } from '../../lib/Atom';
-import { useRecoilState, useRecoilValue, useRecoilValueLoadable } from 'recoil';
+import { dateState, userState, todoState, todosRender } from '../../lib/Atom';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 const TodoListStyle = styled.div `
     display: flex;
@@ -45,27 +45,24 @@ export default function TodoList (){
     const [dataList, setDataList] = useState([]);
     const [todoList, setTodoList] = useRecoilState(todoState)
     const [error, setError] = useState(null);
-
-    console.log(userInfo);
-    console.log(uuid);
-    console.log(date);
-
+    
     useEffect(()=>{
+        if(!userInfo) return;
         loadTodoList(uuid, date, setDataList, setTodoList, setError);
-    }, [userInfo, date])
-
+    }, [uuid, date])
+    
+    const currTodos = useRecoilValue(todosRender);
+    console.log('currTodos');
+    console.log(currTodos);
 
     if (error) {
         return <div>{error}</div>;
     }
 
-    console.log('todolist >>')
-    console.log(todoList);
-
     return (
         <TodoListStyle>
             {
-                todoList && todoList.map((v, i) => <TodoItem key={i} text={v.title} idx={v.idx}/>)
+                currTodos && currTodos.map((v, i) => <TodoItem key={i} text={v.title} idx={v.idx} done={v.complete_state}/>)
             }
         </TodoListStyle>
     );

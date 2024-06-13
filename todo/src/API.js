@@ -81,10 +81,13 @@ export const onDeleteTodo = async (uuid, idx) => {
 //todo 완료체크하기
 export const onChangeCheck = async (idx, chkState) => {
     
-    const { error } = await supabaseClient
+    const { data, error } = await supabaseClient
         .from('todolist')
         .update({complete_state: chkState})
         .eq('idx', idx)
+        .select()
 
     if(error) console.log(error);
+
+    return data[0];
 }

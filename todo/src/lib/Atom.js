@@ -19,12 +19,63 @@ export const todoState = atom({
     ,default: []
 })
 
+export const todosRender = selector({
+    key: 'todosRender',
+    get: ({get}) => {
+        const uuid = get(userState);
+        if(!uuid) return;
+
+        const currTodos = get(todoState);
+        return currTodos;
+    }
+}) 
+
 //에러 상태
 export const errorState = atom({
     key: 'errorState',
     default: null
 })
 
+export const allTodos = atom({
+    key: 'allTodos',
+    default: []
+})
+
+
+//캘린더 이벤트
+export const calendarEvents = selector({
+    key: 'calendarEvents',
+    get: ({get}) => {
+        const userInfo = get(userState);
+        if(!userInfo) return;
+
+        // const {data, error} = await supabaseClient
+        //     .from('todolist')
+        //     .select('*')
+        //     .eq('id', userInfo.user.id)
+
+        // if(error) {
+        //     console.log(' calendarEvents fetch error ');
+        //     console.log(error);
+        //     return;
+        // }
+
+        const data = get(todoState);
+        const events = data
+            .filter((v) => v.complete_state === true)
+            .map((v) => {
+                return {
+                    title: `📌${v.title}`,
+                    id: `todo_${v.idx}`, 
+                    start: v.start_date, 
+                    backgroundColor: 'transparent',
+                    border: '#A9CCE3',
+                    fontSize: '12px'
+                }
+            });
+        return events;
+    }
+})
 //supabase
 // export const filteredTodoState = selector({
 //     key: 'filteredTodoState',

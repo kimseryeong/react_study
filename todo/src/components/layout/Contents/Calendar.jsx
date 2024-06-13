@@ -4,49 +4,72 @@ import interaction from '@fullcalendar/interaction';
 import bootstrap5Plugin from '@fullcalendar/bootstrap5';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { dateState, todoState, userState, errorState } from '../../../lib/Atom';
+// import { loadAllTodos } from '../../../API';
+import { dateState, todoState, userState, errorState, calendarEvents, allTodos } from '../../../lib/Atom';
 
 
 import { FullCalendarContainer } from './FullCalendarContainer'
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';  //boot5
+import { supabaseClient } from '../../../lib/client';
 import { useEffect } from 'react';
 
-
-// const events = [
-//     {title: 'event1', start: new Date()},
-//     {
-//         id:'event2',
-//         title: 'event2',
-//         start: '2024-06-02', 
-//         end: '2024-06-04', 
-//         backgroundColor: '#A9CCE3', 
-
-//     },
-//     {title: 'event10', start: '2024-06-02', end: '2024-06-07', backgroundColor: '#A9CCE3'},
-//     {title: 'event3', start: '2024-06-07', backgroundColor: '#A9CCE3'},
-// ]
-
-const date = () => {
-
-    const newDate = new Date();
-    const year = newDate.getFullYear();
-    const month = newDate.getMonth()+1;
+// const loadAllTodos = async (uuid, setAllTodoList) => {
+//     const {data, error} =await supabaseClient.from('todolist').select('*').eq('id', uuid)
     
-    return `${year}  ${month}`;
-}
+//     if(error) {
+//         console.log('loadAllTodos error');
+//         console.log(error);
+//         return;
+//     }
+//     setAllTodoList(data);
+// }
+
+// const loadAllTodos = async (uuid) => {
+//     if(!uuid) return;
+
+//     // const todos = get(todoState);
+//     const {data, error} = await supabaseClient
+//         .from('todolist')
+//         .select('*')
+//         .eq('id', uuid)
+
+//     if(error) {
+//         console.log(' calendarEvents fetch error ');
+//         console.log(error);
+//         return;
+//     }
+
+//     console.log(data);
+//     const events = data
+//         .filter((v) => v.complete_state === true)
+//         .map((v) => {
+//             return {
+//                 title: `📌${v.title}`,
+//                 id: `todo_${v.idx}`, 
+//                 start: v.start_date, 
+//                 backgroundColor: 'transparent',
+//                 border: '#A9CCE3',
+//                 fontSize: '13px',
+//                 fontWeight: '800'
+//             }
+//         });
+//     return events;
+// }
 
 export default function Calendar () {
     const setTodoList = useSetRecoilState(todoState); 
     const setError = useSetRecoilState(errorState);
     const currDate = useRecoilValue(dateState);
     const userInfo = useRecoilValue(userState);
-    const uuid = userInfo ? userInfo.id : '';
+    const uuid = userInfo ? userInfo.user.id : '';
+    
+    //06.13-----------------------------------------------------
+    const calEvent = useRecoilValue(calendarEvents);
+    console.log(calEvent);
+    //06.13-----------------------------------------------------
 
-    //06.11-----------------------------------------------------
-
-    //06.11-----------------------------------------------------
-
+    // const events = loadAllTodos(uuid);
 
     const renderTodo = (date) => {
     
@@ -66,7 +89,7 @@ export default function Calendar () {
                 <FullCalendar 
                     plugins={[dayGridPlugin, interaction, bootstrap5Plugin ]}
                     initialView='dayGridMonth'
-                    // events={events}
+                    events={calEvent}
                     viewHeight={300}
                     themeSystem='bootstrap5'
                     headerToolbar={{
@@ -74,14 +97,6 @@ export default function Calendar () {
                         center: '',
                         end: 'prev today next'
                     }}
-                    // navLinks={true}
-                    // navLinkDayClick={(date, e)=>{ //date 클릭
-                    //     console.log(date); 
-                    //     console.log(date.toISOString()); 
-                    //     console.log(e.pageX, e.pageY)
-                    //     console.log(e.srcElement.classList);
-                    //     console.log(this);
-                    // }}
                     dateClick={(arg) => renderTodo(arg.date)}
                     eventClick={(info) => console.log('클릭',info.event._def)} //이벤트 클릭
                 />
